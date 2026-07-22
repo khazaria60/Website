@@ -1,0 +1,373 @@
+/* ==========================================================
+   RESET ONLY — no design decisions made here.
+   This just neutralizes default browser quirks so you're
+   starting from a clean, predictable baseline.
+   Everything visual (color, layout, type, spacing) is yours.
+   ========================================================== */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+  font-family: "Times New Roman", Times, serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #0a0a0a;
+  color: #e8e8e8;
+}
+
+main {
+  flex: 1;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: #3d6bff;
+  text-decoration: underline;
+}
+
+a:hover {
+  color: #ff4747;
+  text-shadow: none;
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.work-item {
+  margin-bottom: 0.75rem;
+}
+
+.work-description {
+  display: none;
+  max-width: 16rem;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: #e8e8e8;
+}
+
+.about-text {
+  max-width: 16rem;
+}
+
+.work-item.is-open .work-description {
+  display: block;
+}
+
+.work-sublink-row {
+  margin-top: 0.25rem;
+  margin-left: 1.25rem;
+}
+
+.work-sublink-prefix,
+.work-sublink {
+  font-size: 0.85rem;
+}
+
+.work-sublink-prefix::before {
+  content: "\25B8";
+  display: inline-block;
+  margin-right: 0.35rem;
+  color: #3d6bff;
+}
+
+.work-sublink-description {
+  display: none;
+  max-width: 16rem;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: #e8e8e8;
+}
+
+.work-sublink-row.is-open .work-sublink-description {
+  display: block;
+}
+
+.work-sublink-row.is-open .work-sublink-prefix::before {
+  content: "\25BE";
+}
+
+.work-link {
+  display: grid;
+  grid-template-columns: 16rem 1fr;
+  gap: 0.75rem;
+}
+
+.work-title::before {
+  content: "\25B8";
+  display: inline-block;
+  margin-right: 0.35rem;
+  color: #3d6bff;
+}
+
+.work-item.is-open .work-title::before {
+  content: "\25BE";
+}
+
+.work-tag {
+  text-align: right;
+  font-family: Helvetica, Arial, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.85rem;
+}
+
+h1, h2, h3, p, a, span {
+  font-size: 0.925rem;
+}
+
+h2 {
+  font-weight: normal;
+}
+
+.section-title {
+  background-color: #222;
+  color: #e8e8e8;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.75rem;
+  padding: 0.35rem 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+
+
+.logo {
+  color: #e8e8e8;
+  text-transform: uppercase;
+  text-decoration: none;
+  font-size: 1.5rem;
+}
+
+.logo:hover,
+.main-nav a:hover {
+  color: #ff4747;
+  text-decoration: underline;
+}
+
+.main-nav a {
+  color: #e8e8e8;
+  text-decoration: none;
+}
+
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background-color: #222;
+  padding: 0.5rem 0.75rem;
+}
+
+.main-nav {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.marquee span, .site-footer p {
+  color: #3d6bff;
+}
+
+.last-updated {
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+.marquee {
+  overflow: hidden;
+  white-space: nowrap;
+  width: 100%;
+  margin-bottom: 0.75rem;
+  visibility: hidden;
+}
+
+.marquee-track {
+  display: inline-flex;
+  width: max-content;
+}
+
+.marquee-track span {
+  padding-right: 15rem;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #333;
+  margin: 1.5rem 0;
+}
+
+.about {
+  padding-top: 1.5rem;
+}
+
+
+
+.content-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  margin-top: 1.5rem;
+}
+
+.content-layout.is-active {
+  gap: 2rem;
+}
+
+.listings {
+  flex: 1 1 100%;
+  max-width: 100%;
+}
+
+.content-layout.is-active .listings {
+  flex: 0 0 40%;
+  max-width: 40%;
+}
+
+.preview-pane {
+  flex: 0 0 0%;
+  min-width: 0;
+  max-width: 0%;
+  overflow: hidden;
+  position: sticky;
+  top: 1rem;
+  opacity: 0;
+}
+
+.content-layout.is-active .preview-pane {
+  flex: 1 1 60%;
+  max-width: 60%;
+  opacity: 1;
+}
+
+.preview-image {
+  width: 100%;
+  overflow-y: auto;
+  background-color: #000;
+  color: #888;
+  position: relative;
+  border: 1px solid #333;
+}
+
+.content-layout.is-active .preview-image {
+  height: calc(100vh - 2rem);
+}
+
+.preview-image.is-empty {
+  aspect-ratio: 4 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1rem;
+}
+
+.preview-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+  cursor: zoom-in;
+}
+
+.preview-image iframe,
+.preview-image video {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  display: block;
+  border: 0;
+}
+
+.preview-image .pdf-frame {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+  display: block;
+  border: 0;
+}
+
+.preview-image img + img {
+  margin-top: 1rem;
+}
+
+.social-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.social-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.social-icon {
+  font-size: 1.25rem;
+}
+
+.social-links a:hover {
+  color: #ff4747;
+}
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  background-color: rgba(0, 0, 0, 0.9);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.lightbox.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.lightbox img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+}
+
+.lightbox-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #e8e8e8;
+  font-size: 3rem;
+  line-height: 1;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.lightbox-arrow:hover {
+  color: #5c3dff;
+  text-shadow: 0 0 6px rgba(92, 61, 255, 0.45);
+}
+
+.lightbox-prev {
+  left: 0.5rem;
+}
+
+.lightbox-next {
+  right: 0.5rem;
+}

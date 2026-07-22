@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -sL \"https://tomfawley.com/\" -o /private/tmp/claude-501/-Users-Khaz-Desktop-Data-Khazaria-Website/948a1ade-5a29-4819-8452-abb3c7d42056/scratchpad/tomfawley.html)",
+      "Bash(curl -sL -A \"Mozilla/5.0 \\(Macintosh; Intel Mac OS X 10_15_7\\) AppleWebKit/537.36\" \"https://tomfawley.com/\" -o /private/tmp/claude-501/-Users-Khaz-Desktop-Data-Khazaria-Website/948a1ade-5a29-4819-8452-abb3c7d42056/scratchpad/tomfawley.html -w \"%{http_code}\\\\n\")",
+      "Bash(curl -sL -A \"Mozilla/5.0\" \"https://tomfawley.com/\" -o /private/tmp/claude-501/-Users-Khaz-Desktop-Data-Khazaria-Website/948a1ade-5a29-4819-8452-abb3c7d42056/scratchpad/tomfawley.html)"
+    ]
+  }
+}
