@@ -22,12 +22,41 @@
 (function () {
   var previewImage = document.getElementById("previewImage");
   var contentLayout = document.querySelector(".content-layout");
+  var previewPane = document.querySelector(".preview-pane");
   if (!previewImage || !contentLayout) return;
 
   var links = document.querySelectorAll(".work-link");
   var logo = document.querySelector(".logo");
   var activeLink = null;
   var activeOpenEl = null;
+
+  // on mobile (stacked layout) the shared preview pane is physically moved
+  // in the page to sit right after whichever link was actually clicked —
+  // right after the project's own description (and before any WATCH row)
+  // when the title was clicked, or right after that WATCH row itself when
+  // a WATCH link was clicked — instead of always trailing the whole <li>.
+  // On desktop it stays in its normal place beside the list.
+  function positionPreviewPane(link) {
+    if (!previewPane) return;
+    var isMobile = window.matchMedia("(max-width: 600px)").matches;
+    if (!isMobile || !link) {
+      contentLayout.appendChild(previewPane);
+      return;
+    }
+
+    if (link.classList.contains("work-link")) {
+      var item = link.closest(".work-item");
+      var firstSublinkRow = item.querySelector(".work-sublink-row");
+      if (firstSublinkRow) {
+        item.insertBefore(previewPane, firstSublinkRow);
+      } else {
+        item.appendChild(previewPane);
+      }
+    } else {
+      var row = link.closest(".work-sublink-row");
+      row.insertAdjacentElement("afterend", previewPane);
+    }
+  }
 
   // a project's own title toggles its <li> (drives the description text
   // and the title's triangle); a WATCH link toggles only its own sublink
@@ -42,6 +71,7 @@
     }
     activeOpenEl = el;
     if (activeOpenEl) activeOpenEl.classList.add("is-open");
+    positionPreviewPane(link);
   }
 
   function closePreview() {
@@ -49,6 +79,7 @@
     activeLink = null;
     if (activeOpenEl) activeOpenEl.classList.remove("is-open");
     activeOpenEl = null;
+    positionPreviewPane(null);
     // wait for the pane's fade/collapse transition to finish before
     // swapping its content, so the text change doesn't happen mid-shrink
     setTimeout(function () {

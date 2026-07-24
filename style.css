@@ -54,7 +54,7 @@ ul {
   display: none;
   max-width: 16rem;
   margin-top: 0.5rem;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   color: #e8e8e8;
 }
 
@@ -73,7 +73,7 @@ ul {
 
 .work-sublink-prefix,
 .work-sublink {
-  font-size: 0.85rem;
+  font-size: 0.95rem;
 }
 
 .work-sublink-prefix::before {
@@ -87,7 +87,7 @@ ul {
   display: none;
   max-width: 16rem;
   margin-top: 0.5rem;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   color: #e8e8e8;
 }
 
@@ -125,7 +125,7 @@ ul {
 }
 
 h1, h2, h3, p, a, span {
-  font-size: 0.925rem;
+  font-size: 1.05rem;
 }
 
 h2 {
@@ -137,7 +137,7 @@ h2 {
   color: #e8e8e8;
   text-transform: uppercase;
   letter-spacing: 1px;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   padding: 0.35rem 0.5rem;
   margin-bottom: 0.75rem;
 }
@@ -370,4 +370,80 @@ hr {
 
 .lightbox-next {
   right: 0.5rem;
+}
+
+/* ==========================================================
+   MOBILE ONLY — everything below this point only applies on
+   narrow screens (phones). Desktop layout above is untouched.
+   ========================================================== */
+@media (max-width: 600px) {
+  hr {
+    display: none;
+  }
+
+  .section-title {
+    background-color: transparent;
+    padding: 0;
+    margin-top: 3rem;
+  }
+
+  .about {
+    padding-top: 0;
+  }
+
+  .content-layout {
+    margin-top: 0;
+  }
+
+  h1, h2, h3, p, a, span {
+    font-size: 1rem;
+  }
+
+  .work-description,
+  .work-sublink-description,
+  .work-sublink-prefix,
+  .work-sublink {
+    font-size: 0.9rem;
+  }
+
+  .site-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .logo {
+    font-size: 1.25rem;
+  }
+
+  .marquee span {
+    font-size: 0.7rem;
+  }
+
+  .work-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+
+  .content-layout.is-active {
+    display: block;
+  }
+
+  .content-layout.is-active .listings {
+    max-width: 100%;
+  }
+
+  .content-layout.is-active .preview-pane {
+    max-width: 100%;
+    opacity: 1;
+    overflow: visible;
+    position: static;
+  }
+
+  .content-layout.is-active .preview-image {
+    height: auto;
+    overflow-y: visible;
+  }
 }
