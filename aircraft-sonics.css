@@ -76,6 +76,14 @@ a, a:hover {
   margin-top: 0.75rem;
 }
 
+.location-stamp {
+  font-size: 0.75rem;
+  opacity: 0.5;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 0.5rem;
+}
+
 .aircraft-label {
   margin: 0;
 }
