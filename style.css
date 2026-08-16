@@ -186,11 +186,17 @@ h2 {
 }
 
 .marquee {
+  display: block;
   overflow: hidden;
   white-space: nowrap;
   width: 100%;
   margin-bottom: 0.75rem;
   visibility: hidden;
+  text-decoration: none;
+}
+
+.marquee:hover span {
+  color: #ff4747;
 }
 
 .marquee-track {
