@@ -198,7 +198,7 @@
       var row = document.getElementById("row-" + ac.id);
       if (!row) return;
       row.textContent =
-        ac.id + " — " +
+        "Aircraft " + ac.id.replace("AC", "") + " — " +
         Math.round(ac.altitude).toLocaleString() + "ft · " +
         Math.round(ac.speed) + "kt · " +
         ac.distance.toFixed(1) + "nm";
