@@ -126,7 +126,7 @@
   if (!toggleButton || !statusEl || typeof Tone === "undefined") return;
 
   var SAMPLE_URLS = [
-    "Assets/Aircraft-Sonics/web/sample-a.wav",
+    "Assets/Aircraft-Sonics/web/sample-a.wav?v=2",
     "Assets/Aircraft-Sonics/web/sample-b.wav",
     "Assets/Aircraft-Sonics/web/sample-c.wav"
   ];

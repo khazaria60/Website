@@ -76,8 +76,11 @@ def make_sample(path, noise_alpha, freqs, noise_amp, tonal_amp, drive=0.0):
 
 
 if __name__ == "__main__":
-    # Sample A: darker, low-end, gentle — smoother/browner noise, low partials
-    make_sample("web/sample-a.wav", noise_alpha=0.01, freqs=[80, 160], noise_amp=0.5, tonal_amp=0.25)
+    # Sample A: darker, low-end, gentle — smoother/browner noise, low partials.
+    # Noise kept low relative to the tonal layer (unlike B/C) since this is
+    # the one voice kept long-term, driving 2 of the 4 aircraft — a harsher
+    # noise floor here was drowning out the other three voices in the mix.
+    make_sample("web/sample-a.wav", noise_alpha=0.006, freqs=[80, 160], noise_amp=0.25, tonal_amp=0.32)
 
     # Sample B: brighter, mid-range — pinker noise, mid partials
     make_sample("web/sample-b.wav", noise_alpha=0.04, freqs=[220, 440, 660], noise_amp=0.45, tonal_amp=0.2)
