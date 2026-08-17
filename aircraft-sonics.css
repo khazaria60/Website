@@ -19,14 +19,12 @@ a, a:hover {
   position: absolute;
   top: 15px;
   left: 15px;
-  font-size: 20px;
 }
 
 .topright {
   position: absolute;
   top: 15px;
   right: 15px;
-  font-size: 20px;
   text-align: right;
 }
 
@@ -34,14 +32,12 @@ a, a:hover {
   position: absolute;
   bottom: 15px;
   left: 15px;
-  font-size: 20px;
 }
 
 .bottomright {
   position: absolute;
   bottom: 15px;
   right: 15px;
-  font-size: 20px;
   text-align: right;
 }
 
@@ -84,13 +80,45 @@ a, a:hover {
   margin-top: 0.5rem;
 }
 
-.aircraft-label {
+.aircraft-title {
   margin: 0;
+  font-size: 20px;
+}
+
+.aircraft-data {
+  list-style: none;
+  margin: 0.4rem 0 0;
+  padding: 0;
+}
+
+.aircraft-data li {
+  font-size: 0.7rem;
+  line-height: 1.6;
+  white-space: nowrap;
+}
+
+.metric-label {
+  opacity: 0.55;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.metric-value {
+  font-variant-numeric: tabular-nums;
+}
+
+.arrow {
+  opacity: 0.4;
+  margin: 0 0.15rem;
 }
 
 @media (max-width: 600px) {
-  .topleft, .topright, .bottomleft, .bottomright {
+  .aircraft-title {
     font-size: 14px;
+  }
+
+  .aircraft-data li {
+    font-size: 0.6rem;
   }
 
   .audio-toggle {

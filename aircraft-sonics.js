@@ -192,17 +192,31 @@
     bitCrusher.bits = Math.round(12 - avgNorm * (12 - 4)); // cleaner (slow scene) – grittier (fast scene)
   }, "16n");
 
-  // --- scattered readout labels (one <p id="row-AC1..4"> per aircraft) ---
+  // --- scattered readout labels — for each aircraft, show its 3 raw data
+  // values next to the live sound parameter each one is currently driving
+  // (read straight off the same voice objects the loop above just set, so
+  // the readout can never drift out of sync with what's actually playing) ---
+  function setText(id, text) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = text;
+  }
+
   function updateReadoutRows() {
-    window.FlightSim.aircraft.forEach(function (ac) {
-      var row = document.getElementById("row-" + ac.id);
-      if (!row) return;
-      row.textContent =
-        "Aircraft " + ac.id.replace("AC", "") + " — " +
-        Math.round(ac.altitude).toLocaleString() + "ft · " +
-        Math.round(ac.speed) + "kt · " +
-        ac.distance.toFixed(1) + "nm";
-    });
+    var aircraft = window.FlightSim.aircraft;
+    for (var i = 0; i < aircraft.length; i++) {
+      var ac = aircraft[i];
+      var voice = voices[i];
+      if (!voice) continue;
+
+      setText(ac.id + "-altitude", Math.round(ac.altitude).toLocaleString() + "ft");
+      setText(ac.id + "-pitch", voice.player.playbackRate.toFixed(2) + "x");
+
+      setText(ac.id + "-speed", Math.round(ac.speed) + "kt");
+      setText(ac.id + "-grain", Math.round(voice.player.grainSize * 1000) + "ms");
+
+      setText(ac.id + "-distance", ac.distance.toFixed(1) + "nm");
+      setText(ac.id + "-filter", Math.round(voice.filter.frequency.value) + "Hz");
+    }
   }
 
   var readoutInterval = null;
