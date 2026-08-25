@@ -52,14 +52,30 @@ ul {
 
 .work-description {
   display: none;
-  max-width: 16rem;
+  max-width: 50%;
   margin-top: 0.5rem;
   font-size: 0.95rem;
   color: #e8e8e8;
+  text-align: justify;
 }
 
 .about-text {
-  max-width: 16rem;
+  max-width: 50%;
+  font-size: 0.95rem;
+  text-align: justify;
+}
+
+.exhibition-item {
+  max-width: 50%;
+  font-size: 0.95rem;
+  margin-bottom: 0.75rem;
+}
+
+.exhibition-item::before {
+  content: "\25B8";
+  display: inline-block;
+  margin-right: 0.35rem;
+  color: #3d6bff;
 }
 
 .work-item.is-open .work-description {
@@ -85,10 +101,11 @@ ul {
 
 .work-sublink-description {
   display: none;
-  max-width: 16rem;
+  max-width: 50%;
   margin-top: 0.5rem;
   font-size: 0.95rem;
   color: #e8e8e8;
+  text-align: justify;
 }
 
 .work-sublink-row.is-open .work-sublink-description {
@@ -101,8 +118,12 @@ ul {
 
 .work-link {
   display: grid;
-  grid-template-columns: 16rem 1fr;
+  grid-template-columns: 50% 1fr;
   gap: 0.75rem;
+}
+
+.work-title {
+  text-align: justify;
 }
 
 .work-title::before {
@@ -133,12 +154,11 @@ h2 {
 }
 
 .section-title {
-  background-color: #222;
   color: #e8e8e8;
   text-transform: uppercase;
   letter-spacing: 1px;
-  font-size: 0.85rem;
-  padding: 0.35rem 0.5rem;
+  font-size: 0.95rem;
+  padding: 0.35rem 0;
   margin-bottom: 0.75rem;
 }
 
@@ -168,7 +188,7 @@ h2 {
   justify-content: space-between;
   width: 100%;
   background-color: #222;
-  padding: 0.5rem 0.75rem;
+  padding: 0.5rem 0.25rem;
 }
 
 .main-nav {
@@ -180,9 +200,28 @@ h2 {
   color: #3d6bff;
 }
 
+.marquee span {
+  text-decoration: underline;
+}
+
 .last-updated {
   font-size: 0.8rem;
   opacity: 0.7;
+}
+
+.site-footer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.visitor-counter {
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+  font-variant-numeric: tabular-nums;
+  color: #3d6bff;
+  white-space: nowrap;
 }
 
 .marquee {
@@ -192,7 +231,7 @@ h2 {
   width: 100%;
   margin-bottom: 0.75rem;
   visibility: hidden;
-  text-decoration: none;
+  text-decoration: underline;
 }
 
 .marquee:hover span {
@@ -217,6 +256,7 @@ hr {
 .about {
   padding-top: 1.5rem;
 }
+
 
 
 
@@ -311,6 +351,8 @@ hr {
   flex-direction: column;
   gap: 0.75rem;
   margin-top: 1rem;
+  max-width: 50%;
+  font-size: 0.95rem;
 }
 
 .social-links a {
@@ -387,6 +429,12 @@ hr {
     display: none;
   }
 
+  .site-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
   .section-title {
     background-color: transparent;
     padding: 0;
@@ -395,6 +443,12 @@ hr {
 
   .about {
     padding-top: 0;
+  }
+
+  .about-text,
+  .social-links,
+  .exhibition-item {
+    max-width: 100%;
   }
 
   .content-layout {
@@ -410,6 +464,11 @@ hr {
   .work-sublink-prefix,
   .work-sublink {
     font-size: 0.9rem;
+  }
+
+  .work-description,
+  .work-sublink-description {
+    max-width: 100%;
   }
 
   .site-header {
@@ -431,6 +490,7 @@ hr {
     justify-content: space-between;
     align-items: baseline;
     gap: 0.5rem;
+    max-width: 100%;
   }
 
   .content-layout.is-active {

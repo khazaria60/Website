@@ -14,7 +14,7 @@
   var RELAY_URL = "wss://aircraft-sonics-relay.onrender.com";
 
   var RANGES = {
-    altitude: { min: 2000, max: 35000, maxDelta: 15 },   // feet
+    altitude: { min: 2000, max: 15000, maxDelta: 15 },   // feet — narrowed to match the realistic band nearby traffic actually flies in (35,000 was cruise altitude, rarely seen this close to London), so altitude differences are actually audible
     speed: { min: 80, max: 550, maxDelta: 1.5 },          // knots
     distance: { min: 0, max: 20, maxDelta: 0.05 }         // nautical miles — matches the relay's 20nm search radius
   };
@@ -127,8 +127,8 @@
 
   var SAMPLE_URLS = [
     "Assets/Aircraft-Sonics/web/sample-a.wav?v=2",
-    "Assets/Aircraft-Sonics/web/sample-b.wav",
-    "Assets/Aircraft-Sonics/web/sample-c.wav"
+    "Assets/Aircraft-Sonics/web/sample-b.wav?v=2",
+    "Assets/Aircraft-Sonics/web/sample-c.wav?v=2"
   ];
 
   function clamp01(n) {
@@ -151,13 +151,54 @@
   for (var i = 0; i < 4; i++) {
     var player = new Tone.GrainPlayer({
       url: SAMPLE_URLS[i % SAMPLE_URLS.length],
-      loop: true
+      loop: true,
+      grainSize: 0.15,
+      overlap: 0.4
     });
     var filter = new Tone.Filter(2000, "lowpass");
     player.connect(filter);
-    filter.connect(delay);
-    voices.push({ player: player, filter: filter });
+
+    // speed now drives a flanger (jet-whoosh sweep) into a ring modulator
+    // (metallic/robotic character), replacing the old grain-size/overlap
+    // mapping — built from primitives since Tone.js has no built-in
+    // Flanger or RingModulator class.
+    var flangerDelay = new Tone.Delay(0.004, 0.02);
+    var flangerFeedback = new Tone.Gain(0.35);
+    var flangerDry = new Tone.Gain(0.6);
+    var flangerWet = new Tone.Gain(0.6);
+    var flangerSum = new Tone.Gain(1);
+    var flangerLFO = new Tone.LFO({ frequency: 0.1, min: 0.0008, max: 0.0075 }).start();
+    flangerLFO.connect(flangerDelay.delayTime);
+
+    filter.connect(flangerDry);
+    flangerDry.connect(flangerSum);
+    filter.connect(flangerDelay);
+    flangerDelay.connect(flangerFeedback);
+    flangerFeedback.connect(flangerDelay);
+    flangerDelay.connect(flangerWet);
+    flangerWet.connect(flangerSum);
+
+    var ringGain = new Tone.Gain(0);
+    var ringCarrier = new Tone.Oscillator(60, "sine").start();
+    ringCarrier.connect(ringGain.gain);
+    flangerSum.connect(ringGain);
+    ringGain.connect(delay);
+
+    voices.push({
+      player: player,
+      filter: filter,
+      flangerLFO: flangerLFO,
+      ringCarrier: ringCarrier
+    });
   }
+
+  window.AircraftVoices = voices; // debug hook — inspect/override live in console
+
+  // every parameter below glides toward its new target over this long,
+  // rather than snapping instantly on every tick — the snapping (plus the
+  // old per-tick random volume coin-flip) was what read as "choppy"
+  // instead of a smoothly evolving piece.
+  var RAMP_TIME = 0.4;
 
   var loop = new Tone.Loop(function () {
     var aircraft = window.FlightSim.aircraft;
@@ -169,22 +210,28 @@
       var voice = voices[i];
 
       var altNorm = clamp01((ac.altitude - ranges.altitude.min) / (ranges.altitude.max - ranges.altitude.min));
-      voice.player.playbackRate = 0.5 * Math.pow(4, altNorm); // 0.5x (low) – 2x (high)
+      var targetRate = 0.4 * Math.pow(6.25, altNorm); // 0.4x (low) – 2.5x (high)
+      // playbackRate is a plain number, not a rampable Tone Signal — glide
+      // it by hand, a little at a time each tick, toward the target.
+      voice.player.playbackRate += (targetRate - voice.player.playbackRate) * 0.12;
 
       var speedNorm = clamp01((ac.speed - ranges.speed.min) / (ranges.speed.max - ranges.speed.min));
-      voice.player.grainSize = 0.2 - speedNorm * (0.2 - 0.02); // large/slow – tiny/fast grains
-      voice.player.overlap = 0.1 + speedNorm * (0.5 - 0.1);    // sparse – dense
+      voice.flangerLFO.frequency.rampTo(0.1 + speedNorm * 1.4, RAMP_TIME);   // slow drift (slow) – fast jet-whoosh sweep (fast)
+      voice.ringCarrier.frequency.rampTo(60 + speedNorm * 400, RAMP_TIME);  // low/subtle (slow) – higher/more metallic (fast)
       totalSpeed += ac.speed;
 
       var distNorm = clamp01(ac.distance / ranges.distance.max); // 0 = near, 1 = far
-      voice.filter.frequency.value = 8000 * Math.pow(300 / 8000, distNorm); // bright (near) – dull (far)
+      voice.filter.frequency.rampTo(8000 * Math.pow(300 / 8000, distNorm), RAMP_TIME); // bright (near) – dull (far)
 
       var baseDb = -6 + distNorm * (-24 - -6); // -6dB (near) – -24dB (far)
-      // far aircraft are mostly quiet with occasional swells, rather than
-      // constantly audible at a fixed low volume — a simple, robust stand-in
-      // for "trigger probability" that doesn't rely on fragile note-scheduling.
-      var swellCut = Math.random() < distNorm ? -15 : 0;
-      voice.player.volume.value = baseDb + swellCut;
+      // far aircraft breathe slowly between quieter and a little louder,
+      // rather than a random coin-flip every tick — same "distant traffic
+      // isn't constantly present" idea, but as a smooth, slow swell
+      // instead of a stutter. Each voice swells at a slightly different
+      // rate so they don't all breathe in sync.
+      var swellHz = 0.05 + i * 0.015;
+      var swellDb = -distNorm * 8 * (0.5 - 0.5 * Math.cos(Tone.now() * swellHz * 2 * Math.PI));
+      voice.player.volume.rampTo(baseDb + swellDb, RAMP_TIME);
     }
 
     var avgSpeed = totalSpeed / voices.length;
@@ -212,7 +259,7 @@
       setText(ac.id + "-pitch", voice.player.playbackRate.toFixed(2) + "x");
 
       setText(ac.id + "-speed", Math.round(ac.speed) + "kt");
-      setText(ac.id + "-grain", Math.round(voice.player.grainSize * 1000) + "ms");
+      setText(ac.id + "-ring", Math.round(voice.ringCarrier.frequency.value) + "Hz");
 
       setText(ac.id + "-distance", ac.distance.toFixed(1) + "nm");
       setText(ac.id + "-filter", Math.round(voice.filter.frequency.value) + "Hz");
@@ -222,8 +269,21 @@
   var readoutInterval = null;
   var started = false;
 
+  // iOS Safari otherwise treats raw Web Audio API sound as "ambient" audio,
+  // which follows the ringer volume instead of the media volume and can end
+  // up silent even with the mute switch off. Playing one real, tiny native
+  // <audio> element on the same tap "unlocks" proper media-volume playback
+  // for everything else that follows.
+  var SILENT_AUDIO_DATA_URI = "data:audio/wav;base64,UklGRkQDAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YSADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==";
+
+  function unlockIOSAudio() {
+    var el = new Audio(SILENT_AUDIO_DATA_URI);
+    el.play().catch(function () {});
+  }
+
   toggleButton.addEventListener("click", function () {
     if (!started) {
+      unlockIOSAudio();
       statusEl.textContent = "Starting...";
       Tone.start().then(function () {
         return Tone.loaded();

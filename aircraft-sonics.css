@@ -8,6 +8,8 @@ body {
   padding: 0;
   margin: 0;
   font-family: "Roboto", sans-serif;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 a, a:hover {
@@ -113,15 +115,61 @@ a, a:hover {
 }
 
 @media (max-width: 600px) {
+  .topleft,
+  .topright,
+  .bottomleft,
+  .bottomright {
+    max-width: 45vw;
+  }
+
+  .topleft,
+  .topright {
+    top: 10px;
+  }
+
+  .bottomleft,
+  .bottomright {
+    bottom: 10px;
+  }
+
+  .topleft,
+  .bottomleft {
+    left: 10px;
+  }
+
+  .topright,
+  .bottomright {
+    right: 10px;
+  }
+
   .aircraft-title {
-    font-size: 14px;
+    font-size: 11px;
+  }
+
+  .aircraft-data {
+    margin-top: 0.25rem;
   }
 
   .aircraft-data li {
-    font-size: 0.6rem;
+    font-size: 0.55rem;
+    line-height: 1.4;
+    white-space: normal;
+  }
+
+  .arrow {
+    margin: 0 0.1rem;
   }
 
   .audio-toggle {
-    font-size: 1.1rem;
+    font-size: 1rem;
+    padding: 0.6rem 1rem;
+  }
+
+  .audio-status {
+    font-size: 0.8rem;
+  }
+
+  .location-stamp {
+    font-size: 0.65rem;
   }
 }

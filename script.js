@@ -257,3 +257,19 @@
     });
   }
 })();
+
+// old-school hit counter — free third-party service (abacus.jasoncameron.dev),
+// no backend of our own needed. /hit increments and returns the new total.
+(function () {
+  var countEl = document.getElementById("visitorCount");
+  if (!countEl) return;
+
+  fetch("https://abacus.jasoncameron.dev/hit/khazariacurzon-com/visits")
+    .then(function (res) { return res.json(); })
+    .then(function (data) {
+      countEl.textContent = String(data.value).padStart(6, "0");
+    })
+    .catch(function () {
+      countEl.textContent = "??????";
+    });
+})();
