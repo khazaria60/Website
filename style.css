@@ -156,7 +156,6 @@ h2 {
 .section-title {
   color: #1a1a1a;
   text-transform: uppercase;
-  letter-spacing: 1px;
   font-size: 0.95rem;
   padding: 0.35rem 0;
   margin-top: 0;
@@ -200,6 +199,10 @@ h2 {
   color: #3d6bff;
 }
 
+.site-footer p {
+  font-size: 0.8rem;
+}
+
 .marquee span {
   text-decoration: underline;
 }
@@ -218,7 +221,6 @@ h2 {
 
 .visitor-counter {
   font-size: 0.8rem;
-  letter-spacing: 1px;
   font-variant-numeric: tabular-nums;
   color: #3d6bff;
   white-space: nowrap;
@@ -427,7 +429,7 @@ hr {
   .site-footer {
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.5rem;
+    gap: 1rem;
   }
 
   .section-title {
