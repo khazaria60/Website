@@ -71,6 +71,10 @@ ul {
   margin-bottom: 0.75rem;
 }
 
+.exhibition-item a {
+  font-size: inherit;
+}
+
 .exhibition-item::before {
   content: "\25B8";
   display: inline-block;
@@ -226,6 +230,10 @@ h2 {
   white-space: nowrap;
 }
 
+.visitor-counter span {
+  font-size: inherit;
+}
+
 .marquee {
   display: block;
   overflow: hidden;
@@ -351,6 +359,11 @@ hr {
   margin-top: 1rem;
   max-width: 50%;
   font-size: 0.95rem;
+}
+
+.social-links a,
+.social-links span {
+  font-size: inherit;
 }
 
 .social-links a {
