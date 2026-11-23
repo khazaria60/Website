@@ -297,10 +297,10 @@ hr {
 .preview-image {
   width: 100%;
   overflow-y: auto;
-  background-color: #000;
+  background-color: #ffffff;
   color: #888;
   position: relative;
-  border: 1px solid #333;
+  border: none;
 }
 
 .content-layout.is-active .preview-image {

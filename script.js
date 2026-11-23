@@ -115,7 +115,6 @@
         previewImage.innerHTML = "";
         images.split("|").forEach(function (src) {
           var img = document.createElement("img");
-          img.loading = "lazy";
           img.src = src.trim();
           img.alt = label || "";
           previewImage.appendChild(img);
