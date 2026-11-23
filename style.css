@@ -507,6 +507,7 @@ hr {
 
   .content-layout.is-active .preview-image {
     height: auto;
+    min-height: 60vh;
     overflow-y: visible;
   }
 }
