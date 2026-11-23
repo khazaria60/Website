@@ -29,6 +29,7 @@
   var logo = document.querySelector(".logo");
   var activeLink = null;
   var activeOpenEl = null;
+  var galleryRequestId = 0;
 
   // on mobile (stacked layout) the shared preview pane is physically moved
   // in the page to sit right after whichever link was actually clicked —
@@ -77,6 +78,7 @@
   function closePreview() {
     contentLayout.classList.remove("is-active");
     activeLink = null;
+    galleryRequestId++;
     if (activeOpenEl) activeOpenEl.classList.remove("is-open");
     activeOpenEl = null;
     positionPreviewPane(null);
@@ -113,14 +115,39 @@
         previewImage.classList.remove("is-empty");
         previewImage.style.backgroundColor = "";
         previewImage.innerHTML = "";
-        images.split("|").forEach(function (src) {
-          var img = document.createElement("img");
-          img.loading = "lazy";
-          img.src = src.trim();
-          img.alt = label || "";
-          previewImage.appendChild(img);
+        previewImage.textContent = "Loading…";
+
+        var srcs = images.split("|").map(function (s) { return s.trim(); });
+        var requestId = ++galleryRequestId;
+
+        // preload every image off-DOM first and only insert them once every
+        // single one has finished loading — an <img> renders at zero height
+        // while its bytes are still downloading, and with several images
+        // stacked in a tall scrollable box, that empty sliver let whatever
+        // real page content came next show through underneath as you
+        // scrolled past it. Waiting for the full set removes that gap
+        // entirely instead of just hiding it.
+        Promise.all(
+          srcs.map(function (src) {
+            return new Promise(function (resolve) {
+              var preloader = new Image();
+              preloader.onload = resolve;
+              preloader.onerror = resolve;
+              preloader.src = src;
+            });
+          })
+        ).then(function () {
+          if (requestId !== galleryRequestId) return; // a newer click superseded this one
+          previewImage.innerHTML = "";
+          srcs.forEach(function (src) {
+            var img = document.createElement("img");
+            img.src = src;
+            img.alt = label || "";
+            previewImage.appendChild(img);
+          });
         });
       } else if (pdf) {
+        galleryRequestId++;
         previewImage.classList.remove("is-empty");
         previewImage.style.backgroundColor = "";
         previewImage.innerHTML = "";
@@ -130,6 +157,7 @@
         pdfFrame.title = label || "";
         previewImage.appendChild(pdfFrame);
       } else {
+        galleryRequestId++;
         previewImage.classList.add("is-empty");
         previewImage.innerHTML = "";
         previewImage.style.backgroundColor = color;
@@ -158,6 +186,7 @@
 
       contentLayout.classList.add("is-active");
       previewImage.scrollTop = 0;
+      galleryRequestId++;
       previewImage.classList.remove("is-empty");
       previewImage.style.backgroundColor = "";
       previewImage.innerHTML = "";
@@ -192,6 +221,7 @@
 
       contentLayout.classList.add("is-active");
       previewImage.scrollTop = 0;
+      galleryRequestId++;
       previewImage.classList.remove("is-empty");
       previewImage.style.backgroundColor = "";
       previewImage.innerHTML = "";
